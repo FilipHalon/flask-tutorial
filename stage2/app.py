@@ -5,6 +5,7 @@ from flask_jwt import JWT, jwt_required
 
 
 from security import authenticate, identity
+from user import UserRegister
 
 movies = []
 
@@ -77,4 +78,5 @@ class MovieList(Resource):
 api.add_resource(Student, '/student/<string:name>')
 api.add_resource(Movie, '/movie/<string:name>')
 api.add_resource(MovieList, '/movies')
+api.add_resource(UserRegister, '/user/register')
 app.run(debug=True)

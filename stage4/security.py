@@ -1,11 +1,11 @@
-from user import User
+from models.user import UserModel
 
 # users = [
 #     {"id": 1, "username": "admin", "password": "admin"},
 #     {"id": 2, "username": "Mihu", "password": "password"},
 # ]
 
-users = [User(1, "admin", "admin"), User(2, "Mihu", "password")]
+users = [UserModel(1, "admin", "admin"), UserModel(2, "Mihu", "password")]
 
 # tworząc w ten sposób 2 słowniki pomocnicze nie będziemy musieli iterować po całej liscie użytkowników
 
@@ -44,4 +44,4 @@ def authenticate(username, password):
 
 def identity(payload):
     user_id = payload["identity"]
-    return User.find_by_username(user_id)
+    return UserModel.find_by_username(user_id)
