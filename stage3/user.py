@@ -30,7 +30,7 @@ class User:
         query = "SELECT * FROM users WHERE id = ?"
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
-        result = cursor.execute(query, (id,))
+        result = cursor.execute(query, (_id,))
         row = result.fetchone()
         user = None
         if row:
@@ -62,4 +62,5 @@ class UserRegister(Resource):
         return {"message": "User created."}, 201
 
 
-print(User.find_user_by_username(username="admin"))
+print(User.find_user_by_username(username="admin1"))
+print(User.find_user_by_id(1))
