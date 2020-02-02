@@ -16,50 +16,54 @@ class Movie(Resource):
 
     # @jwt_required()
     def get(self, name):
-        movie = MovieClass.get_movie(name)
+        movie = MovieClass.find(name)
         if movie:
             return {"name": movie.name, "genre": movie.genre}
-        return {"message": "filmu nie znaleziono"}, 418
+        return {"message": "There is no movie with such a title."}, 418
 
     # @jwt_required()
     def post(self, name):
-        data = Movie.parser.parse_args()
-        if MovieClass.get_movie(searchphrase=name):
+        movie = MovieClass.find(name)
+        print(movie)
+        if movie:
+            print(name)
             return {"message": "Movie titled like this already exists."}, 400
+        data = Movie.parser.parse_args()
         movie = MovieClass.save(name=name, genre=data["genre"])
         return movie, 201
 
     # @jwt_required()
     def delete(self, name):
-        movie = MovieClass.get_movie(name)
+        movie = MovieClass.find(name)
         if movie:
             movie.delete()
             return {"message": "movie deleted"}, 204
 
-        return {"message": "Movie titled like this already exists."}, 400
+        return {"message": "Movie titled like this does not exist."}, 400
 
     def put(self, name):
         data = Movie.parser.parse_args()
         genre = data["genre"]
-        movie = MovieClass.get_movie(name)
+        movie = MovieClass.find(name)
         status = 201
 
         if not movie:
-            movie = MovieClass(name, genre)
-            movie.save(name=name, genre=genre)
+            # movie = MovieClass(name, genre)
+            movie = MovieClass.save(name=name, genre=genre)
         else:
-            movie.update(genre)
+            movie.update()
             status = 202
 
         # return movie.to_dict(), status
-        return movie, status
+        # return {'name': movie.name, 'genre': movie.genre}, status
+        return {'message': 'Movie updated.'}, status
 
 
 class MovieList(Resource):
     # @jwt_required()
     def get(self):
         # return {"movies": [movie.to_dict() for movie in MovieClass.get_all()]}
-        return {"movies": [movie for movie in MovieClass.get_all()]}
+        return {"movies": [{'name': movie.name, 'genre': movie.genre} for movie in MovieClass.get_all()]}
 
 
 class MovieClass:
@@ -68,11 +72,11 @@ class MovieClass:
         self.genre = genre
 
     @classmethod
-    def get_movie(cls, searchphrase, searchtype="name"):
-        query = f"SELECT * FROM movies WHERE name = {searchphrase}"
+    def find(cls, searchphrase, searchtype="name"):
+        query = f"SELECT * FROM movies WHERE name = ?"
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
-        result = cursor.execute(query)
+        result = cursor.execute(query, (searchphrase, ))
         row = result.fetchone()
         movie = None
         if row:
@@ -102,7 +106,7 @@ class MovieClass:
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
         query = "UPDATE movies SET genre = ? WHERE name = ?"
-        cursor.execute(query, (self.name, ))
+        cursor.execute(query, (self.name, self.genre))
         connection.commit()
         connection.close()
 
