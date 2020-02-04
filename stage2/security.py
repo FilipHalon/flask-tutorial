@@ -5,7 +5,7 @@ from user import User
 #     {"id": 2, "username": "Mihu", "password": "password"},
 # ]
 
-users = [User(1, "admin", "admin"), User(2, "Mihu", "password")]
+users = [User(1, "admin", "admin"), User(2, "user", "password")]
 
 # tworząc w ten sposób 2 słowniki pomocnicze nie będziemy musieli iterować po całej liscie użytkowników
 
